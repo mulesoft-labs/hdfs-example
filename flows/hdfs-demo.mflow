@@ -45,7 +45,7 @@
             </property-collection>
         </properties>
     </global-element>
-    <flow SubFlow="false" name="data-receiver" entity-id="8db3f2a7-d4fb-451c-8cbe-409aaf8818f2">
+    <flow SubFlow="false" name="data-receiver" entity-id="0bcfc601-daee-4568-9487-081bbed74d7b">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -94,18 +94,28 @@
                     <property name="auxiliary;index" value="11"/>
                 </properties>
             </pattern>
-            <pattern name="Logger" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#1">
+            <endpoint direction="Outbound" message-exchange-pattern="OneWay" name="VM" type="http://www.mulesoft.org/schema/mule/vm/endpoint" entity-id="VM#1">
                 <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
-                    <property name="message" value="#[message.payload]"/>
-                    <property name="category"/>
-                    <property name="level" value="ERROR"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="address"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="encoding"/>
+                    <property name="path" value="data-writer.queue"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="tracking:enable-default-events"/>
                     <property name="auxiliary;index" value="12"/>
+                    <property name="exchange-pattern" value="one-way"/>
+                    <property name="connector-ref"/>
                 </properties>
-            </pattern>
+            </endpoint>
         </lane>
     </flow>
-    <flow SubFlow="false" name="data-writer" entity-id="8cb42b10-3287-4b9c-9345-e32d77e3b3c4">
+    <flow SubFlow="false" name="data-writer" entity-id="442d9c6f-496d-4d4b-832d-cb1d2113133a">
         <properties>
             <property name="processingStrategy" value="Asynchronous_Processing_Strategy"/>
             <property name="processingStrategy2" value="Asynchronous_Processing_Strategy"/>
@@ -115,7 +125,7 @@
         </properties>
         <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#2">
             <graphicalData x="0" y="0" width="0" height="0"/>
-            <endpoint direction="Inbound" message-exchange-pattern="OneWay" name="VM" type="http://www.mulesoft.org/schema/mule/vm/endpoint" entity-id="VM#1">
+            <endpoint direction="Inbound" message-exchange-pattern="OneWay" name="VM" type="http://www.mulesoft.org/schema/mule/vm/endpoint" entity-id="VM#2">
                 <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
                     <property name="ref"/>
@@ -171,20 +181,20 @@
             <splitter index="18" name="Choice" type="org.mule.tooling.ui.modules.core.pattern.cbr" entity-id="Choice#1">
                 <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
-                    <property-collection name="6342781a-26eb-4f87-adde-cac31358f913">
-                        <property name="choice.otherwise" value="true"/>
-                        <property-collection name="choice.attributes"/>
-                    </property-collection>
-                    <property-collection name="822db164-2f0c-41e3-8ba4-32e523ae2adb">
+                    <property-collection name="68478980-a8a9-4069-bee4-91d7bc2dc781">
                         <property name="choice.expression" value="#[!flowVars['hdfs.path.exists']]"/>
                         <property-collection name="choice.attributes">
                             <property name="expression" value="#[!flowVars['hdfs.path.exists']]"/>
                         </property-collection>
                     </property-collection>
+                    <property-collection name="9b021c02-aeb6-41a1-bd0c-b846e798eac2">
+                        <property name="choice.otherwise" value="true"/>
+                        <property-collection name="choice.attributes"/>
+                    </property-collection>
                 </properties>
                 <pattern name="Choice" type="org.mule.tooling.ui.modules.core.pattern.cbr" entity-id="Choice#2"/>
                 <compartment entity-id="compartment#1">
-                    <lane hadOnlyOneElement="false" index="20" isChoiceOtherwiseLane="false" entity-id="822db164-2f0c-41e3-8ba4-32e523ae2adb">
+                    <lane hadOnlyOneElement="false" index="20" isChoiceOtherwiseLane="false" entity-id="68478980-a8a9-4069-bee4-91d7bc2dc781">
                         <pattern name="Make directories" type="http://www.mulesoft.org/schema/mule/hdfs/hdfs-connector" entity-id="HDFS#3">
                             <graphicalData x="0" y="0" width="0" height="0"/>
                             <properties>
@@ -216,7 +226,7 @@
                             </properties>
                         </pattern>
                     </lane>
-                    <lane hadOnlyOneElement="false" index="23" isChoiceOtherwiseLane="true" entity-id="6342781a-26eb-4f87-adde-cac31358f913">
+                    <lane hadOnlyOneElement="false" index="23" isChoiceOtherwiseLane="true" entity-id="9b021c02-aeb6-41a1-bd0c-b846e798eac2">
                         <pattern name="Append to file" type="http://www.mulesoft.org/schema/mule/hdfs/hdfs-connector" entity-id="HDFS#5">
                             <graphicalData x="0" y="0" width="0" height="0"/>
                             <properties>

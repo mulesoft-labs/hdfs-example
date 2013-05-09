@@ -25,10 +25,7 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
     <flow name="data-receiver" doc:name="data-receiver">
         <http:inbound-endpoint exchange-pattern="one-way" host="localhost" port="8081" path="raw-data" doc:name="HTTP"/>
         <object-to-string-transformer doc:name="Object to String"/>
-        <logger message="#[message.payload]" level="ERROR" />
-        <!--
         <vm:outbound-endpoint exchange-pattern="one-way" path="data-writer.queue" doc:name="VM"/>
-         -->
     </flow>
     
     <flow name="data-writer" doc:name="data-writer" processingStrategy="Asynchronous_Processing_Strategy">
