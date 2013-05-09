@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.mule.examples</groupId>
+    <artifactId>hdfs-example</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>mule</packaging>
+    <name>HDFS Connector Example</name>
+
+    <properties>
+        <mule.version>3.4.0</mule.version>
+        <spring.version>3.2.1.RELEASE</spring.version>
+    </properties>
+
+    <dependencies>
+        <!-- Mule goodness -->
+        <dependency>
+            <groupId>org.mule</groupId>
+            <artifactId>mule-core</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-vm</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-http</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Extra modules and connectors -->
+        <dependency>
+	        <groupId>org.mule.modules</groupId>
+	        <artifactId>mule-module-hdfs</artifactId>
+	        <version>3.6</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.mule.tools</groupId>
+                <artifactId>maven-mule-plugin</artifactId>
+                <version>1.9</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <copyToAppsDirectory>true</copyToAppsDirectory>
+                    <excludeMuleDependencies>true</excludeMuleDependencies>
+                    <inclusions>
+                        <inclusion>
+                            <groupId>org.mule.modules</groupId>
+                            <artifactId>mule-module-hdfs</artifactId>
+                        </inclusion>
+                    </inclusions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
