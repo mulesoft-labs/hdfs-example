@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:hdfs="http://www.mulesoft.org/schema/mule/hdfs" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/hdfs http://www.mulesoft.org/schema/mule/hdfs/3.4/mule-hdfs.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+
+    <global-property name="hdfs.data.dir" value="/tmp/data" />
+
+    <configuration doc:name="Configuration">
+        <expression-language>
+            <import class="org.mule.util.StringUtils" />
+        </expression-language>
+    </configuration>
+
+    <asynchronous-processing-strategy name="Asynchronous_Processing_Strategy" maxThreads="1" minThreads="1" poolExhaustedAction="WAIT" doc:name="Asynchronous Processing Strategy"/>
+    
+    <hdfs:config name="HDFS" defaultFileSystemName="hdfs://localhost:8020" doc:name="HDFS">
+        <hdfs:configuration-resources ref="#[payload]"/>
+        <hdfs:connection-pooling-profile initialisationPolicy="INITIALISE_ONE" exhaustedAction="WHEN_EXHAUSTED_GROW"/>
+    </hdfs:config>
+    
+    <flow name="data-receiver" doc:name="data-receiver">
+        <http:inbound-endpoint exchange-pattern="one-way" host="localhost" port="8081" path="raw-data" doc:name="HTTP"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <vm:outbound-endpoint exchange-pattern="one-way" path="data-writer.queue" doc:name="VM"/>
+    </flow>
+    
+    <flow name="data-writer" doc:name="data-writer" processingStrategy="Asynchronous_Processing_Strategy">
+        <vm:inbound-endpoint exchange-pattern="one-way" path="data-writer.queue" doc:name="VM"/>
+        <expression-transformer expression="#[message.payload = message.payload + '\n']" doc:name="Append CRLF"/>
+        <set-variable variableName="hdfsPath" value="#['${hdfs.data.dir}/' + StringUtils.replaceChars(StringUtils.substringBefore(payload,'T'), ',-', '/')]" doc:name="Set HDFS Path"/>
+        <hdfs:get-metadata config-ref="HDFS" path="#[hdfsPath]" doc:name="Get Path Meta Data"/>
+        <choice doc:name="Choice">
+            <when expression="#[!flowVars['hdfs.path.exists']]">
+                <hdfs:make-directories config-ref="HDFS" path="#[hdfsPath]" doc:name="Make directories"/>
+                <hdfs:write config-ref="HDFS" path="#[hdfsPath + '/raw.dat']" doc:name="Create new file"/>
+            </when>
+            <otherwise>
+                <hdfs:append config-ref="HDFS" path="#[hdfsPath + '/raw.dat']" doc:name="Append to file"/>
+            </otherwise>
+        </choice>
+    </flow>
+</mule>

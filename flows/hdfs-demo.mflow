@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="hdfs-demo">
+    <global-element name="Global Property" type="http://www.mulesoft.org/schema/mule/core/global-property" entity-id="Global Property#1">
+        <properties>
+            <property name="name" value="hdfs.data.dir"/>
+            <property name="value" value="/tmp/data"/>
+            <property name="auxiliary;index" value="1"/>
+        </properties>
+    </global-element>
+    <global-element name="Configuration" type="http://www.mulesoft.org/schema/mule/core/configuration" entity-id="Configuration#1">
+        <properties>
+            <property name="defaultExceptionStrategy-ref"/>
+            <property name="auxiliary;index" value="2"/>
+        </properties>
+    </global-element>
+    <global-element name="Asynchronous Processing Strategy" type="http://www.mulesoft.org/schema/mule/core/asynchronous-processing-strategy" entity-id="Asynchronous Processing Strategy#1">
+        <properties>
+            <property name="maxBufferSize"/>
+            <property name="poolExhaustedAction" value="WAIT"/>
+            <property name="threadWaitTimeout"/>
+            <property name="minThreads" value="1"/>
+            <property name="name" value="Asynchronous_Processing_Strategy"/>
+            <property name="maxThreads" value="1"/>
+            <property name="threadTTL"/>
+            <property name="auxiliary;index" value="5"/>
+        </properties>
+    </global-element>
+    <global-element name="HDFS" type="http://www.mulesoft.org/schema/mule/hdfs/config" entity-id="HDFS#1">
+        <properties>
+            <property name="fileSystem-ref"/>
+            <property name="name" value="HDFS"/>
+            <property name="defaultFileSystemName" value="hdfs://localhost:8020"/>
+            <property name="connectionKey"/>
+            <property name="auxiliary;index" value="6"/>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/hdfs/configurable-configuration-resourcess;0">
+                <property name="ref" value="#[payload]"/>
+                <property name="auxiliary;index" value="7"/>
+                <property name="auxiliary;wrapIn" value="7"/>
+            </property-collection>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/hdfs/connection-pooling-profile;0">
+                <property name="exhaustedAction" value="WHEN_EXHAUSTED_GROW"/>
+                <property name="auxiliary;index" value="8"/>
+                <property name="auxiliary;wrapIn" value="8"/>
+                <property name="initialisationPolicy" value="INITIALISE_ONE"/>
+            </property-collection>
+        </properties>
+    </global-element>
+    <flow SubFlow="false" name="data-receiver" entity-id="641d7344-da1b-4254-8f71-87f6849f7189">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="9"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <endpoint direction="Inbound" message-exchange-pattern="RequestResponse" name="HTTP" type="http://www.mulesoft.org/schema/mule/http/endpoint" entity-id="HTTP#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="port" value="8081"/>
+                    <property name="host" value="localhost"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="followRedirects"/>
+                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/http/endpoint"/>
+                    <property name="keep-alive"/>
+                    <property name="contentType"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="password"/>
+                    <property name="exchange-pattern" value="one-way"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="httpLabel"/>
+                    <property name="address"/>
+                    <property name="path" value="raw-data"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="method"/>
+                    <property name="user"/>
+                    <property name="responseTimeout"/>
+                    <property name="mimeType"/>
+                    <property name="auxiliary;index" value="10"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <pattern name="Object to String" type="http://www.mulesoft.org/schema/mule/core/object-to-string-transformer" entity-id="Object to String#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property name="auxiliary;index" value="11"/>
+                </properties>
+            </pattern>
+            <endpoint direction="Outbound" message-exchange-pattern="OneWay" name="VM" type="http://www.mulesoft.org/schema/mule/vm/endpoint" entity-id="VM#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="address"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="encoding"/>
+                    <property name="path" value="data-writer.queue"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="auxiliary;index" value="12"/>
+                    <property name="exchange-pattern" value="one-way"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="data-writer" entity-id="c347b654-362f-4f46-a39d-5c00c89a2847">
+        <properties>
+            <property name="processingStrategy" value="Asynchronous_Processing_Strategy"/>
+            <property name="processingStrategy2" value="Asynchronous_Processing_Strategy"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="13"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#2">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <endpoint direction="Inbound" message-exchange-pattern="OneWay" name="VM" type="http://www.mulesoft.org/schema/mule/vm/endpoint" entity-id="VM#2">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="address"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="encoding"/>
+                    <property name="path" value="data-writer.queue"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="auxiliary;index" value="14"/>
+                    <property name="exchange-pattern" value="one-way"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <pattern name="Append CRLF" type="http://www.mulesoft.org/schema/mule/core/expression-transformer" entity-id="Expression#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="expression" value="#[message.payload = message.payload + '\n']"/>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="returnSourceIfNull"/>
+                    <property name="custom-evaluator"/>
+                    <property name="encoding"/>
+                    <property name="evaluator"/>
+                    <property name="mimeType"/>
+                    <property name="auxiliary;index" value="15"/>
+                </properties>
+            </pattern>
+            <pattern name="Set HDFS Path" type="http://www.mulesoft.org/schema/mule/core/variable-transformer" entity-id="Variable#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="variableName" value="hdfsPath"/>
+                    <property name="value" value="#['${hdfs.data.dir}/' + StringUtils.replaceChars(StringUtils.substringBefore(payload,'T'), ',-', '/')]"/>
+                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/core/set-variable"/>
+                    <property name="auxiliary;index" value="16"/>
+                </properties>
+            </pattern>
+            <pattern name="Get Path Meta Data" type="http://www.mulesoft.org/schema/mule/hdfs/hdfs-connector" entity-id="HDFS#2">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name=""/>
+                    <property name="path" value="#[hdfsPath]"/>
+                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/hdfs/get-metadata"/>
+                    <property name="connectionKey"/>
+                    <property name="config-ref" value="HDFS"/>
+                    <property name="auxiliary;index" value="17"/>
+                </properties>
+            </pattern>
+            <splitter index="18" name="Choice" type="org.mule.tooling.ui.modules.core.pattern.cbr" entity-id="Choice#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property-collection name="d22e18a7-5c51-4296-888e-9617d7e15720">
+                        <property name="choice.otherwise" value="true"/>
+                        <property-collection name="choice.attributes"/>
+                    </property-collection>
+                    <property-collection name="2727105b-d35f-42c4-aa2b-3fb4c92e4850">
+                        <property name="choice.expression" value="#[!flowVars['hdfs.path.exists']]"/>
+                        <property-collection name="choice.attributes">
+                            <property name="expression" value="#[!flowVars['hdfs.path.exists']]"/>
+                        </property-collection>
+                    </property-collection>
+                </properties>
+                <pattern name="Choice" type="org.mule.tooling.ui.modules.core.pattern.cbr" entity-id="Choice#2"/>
+                <compartment entity-id="compartment#1">
+                    <lane hadOnlyOneElement="false" index="20" isChoiceOtherwiseLane="false" entity-id="2727105b-d35f-42c4-aa2b-3fb4c92e4850">
+                        <pattern name="Make directories" type="http://www.mulesoft.org/schema/mule/hdfs/hdfs-connector" entity-id="HDFS#3">
+                            <graphicalData x="0" y="0" width="0" height="0"/>
+                            <properties>
+<property name=""/>
+<property name="path" value="#[hdfsPath]"/>
+<property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/hdfs/make-directories"/>
+<property name="permission"/>
+<property name="connectionKey"/>
+<property name="config-ref" value="HDFS"/>
+<property name="auxiliary;index" value="20"/>
+                            </properties>
+                        </pattern>
+                        <pattern name="Create new file" type="http://www.mulesoft.org/schema/mule/hdfs/hdfs-connector" entity-id="HDFS#4">
+                            <graphicalData x="0" y="0" width="0" height="0"/>
+                            <properties>
+<property name=""/>
+<property name="ownerUserName"/>
+<property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/hdfs/write"/>
+<property name="permission"/>
+<property name="blockSize"/>
+<property name="connectionKey"/>
+<property name="bufferSize"/>
+<property name="replication"/>
+<property name="overwrite"/>
+<property name="path" value="#[hdfsPath + '/raw.dat']"/>
+<property name="ownerGroupName"/>
+<property name="config-ref" value="HDFS"/>
+<property name="auxiliary;index" value="21"/>
+                            </properties>
+                        </pattern>
+                    </lane>
+                    <lane hadOnlyOneElement="false" index="23" isChoiceOtherwiseLane="true" entity-id="d22e18a7-5c51-4296-888e-9617d7e15720">
+                        <pattern name="Append to file" type="http://www.mulesoft.org/schema/mule/hdfs/hdfs-connector" entity-id="HDFS#5">
+                            <graphicalData x="0" y="0" width="0" height="0"/>
+                            <properties>
+<property name=""/>
+<property name="bufferSize"/>
+<property name="path" value="#[hdfsPath + '/raw.dat']"/>
+<property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/hdfs/append"/>
+<property name="connectionKey"/>
+<property name="config-ref" value="HDFS"/>
+<property name="auxiliary;index" value="23"/>
+                            </properties>
+                        </pattern>
+                    </lane>
+                </compartment>
+            </splitter>
+        </lane>
+    </flow>
+    <description></description>
+</mule-configuration>
