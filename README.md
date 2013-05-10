@@ -13,3 +13,6 @@ To check the stored data:
 To clear up all test data:
 
     hadoop fs -rmr -skipTrash '/tmp/data'
+
+The `misc` directory contains an Apache JMeter configuration that can be used to concurrently send data to this example's application.
+
