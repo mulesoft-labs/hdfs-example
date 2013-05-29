@@ -1,5 +1,13 @@
 ## HDFS Example
 
+### Getting started
+
+- Import > Mule Studio Project from External Location > (select installation directory - hdfs-example)
+- (Right click hdfs-example project) > Run As > Mule Application with Maven"
+
+
+### Testing
+
 To store some data:
 
     curl -H "Content-Type: text/plain" http://localhost:8081/raw-data -d "210145,2012-10-26T21:32:52,135.23"
