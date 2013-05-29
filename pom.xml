@@ -36,9 +36,9 @@
 
         <!-- Extra modules and connectors -->
         <dependency>
-	        <groupId>org.mule.modules</groupId>
-	        <artifactId>mule-module-hdfs</artifactId>
-	        <version>3.6</version>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-hdfs</artifactId>
+            <version>3.6</version>
         </dependency>
     </dependencies>
 
@@ -62,4 +62,22 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>mulesoft-snapshots</id>
+            <name>MuleSoft Snapshot Repository</name>
+            <url>https://repository.mulesoft.org/snapshots/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>mulesoft-releases</id>
+            <name>MuleSoft Repository</name>
+            <url>https://repository.mulesoft.org/releases/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
 </project>
